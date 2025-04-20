@@ -1,6 +1,55 @@
-.btn-container{
+.btn-container {
   /* Add your styles here */
   margin-top: 10px;
   margin-bottom: 10px
+}
 
+.small,
+small {
+  font-size: 13px;
+}
+
+.form-select,
+.form-control {
+  height: 25px;
+  font-size: smaller;
+
+}
+
+.table {
+  width: fit-content;
+}
+
+.table th,
+.table td {
+  text-align: center;
+  padding: 10px;
+  border: none;
+
+}
+
+.table th {
+  background:#e9ecef;
+  color: #16191b;
+}
+
+.besoin td { font-size: smaller;
+
+}
+.besoin  tr th{
+  background: #e9ecef;
+  color: #16191b;
+}
+
+option {
+  font-size: smaller;
+
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: normal;
 }

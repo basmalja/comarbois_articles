@@ -1,32 +1,26 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "your_database_name";
+include '../connexion/db.php'; // Assurez-vous d'inclure votre connexion à la base de données
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Vérifier si la requête est bien en POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Récupérer les valeurs du formulaire
+    $idbesoin = $_POST['idbesoin'] ?? '';
+    $date = $_POST['date'] ?? '';
+    $origine = $_POST['origine'] ?? '';
+    $client = $_POST['client'] ?? '';
+    $objet = $_POST['objet'] ?? ''; 
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    // Préparer la requête SQL pour éviter les injections SQL
+    $sql = "INSERT INTO besoin (idbesoin, date, origine, client , objet) VALUES ('$idbesoin', '$date', '$origine', '$client','$objet')";
+    if (mysqli_query($conn, $sql)) {
+        $last_id = mysqli_insert_id($conn); // Récupérer l'ID inséré
+        echo json_encode(["status" => "success", "idModif" => $last_id, "message" => "Insertion réussie", "idbesoin" => $last_id]);
+    } else {
+        echo json_encode(["status" => "error", "message" => "Erreur : " . mysqli_error($conn)]);
+    }
 
-// Get data from POST request
-$besoin = $_POST['besoin'];
-
-// Prepare and bind
-$stmt = $conn->prepare("INSERT INTO besoins (besoin) VALUES (?)");
-$stmt->bind_param("s", $besoin);
-
-// Execute the statement
-if ($stmt->execute()) {
-    echo "New record created successfully";
+    mysqli_close($conn);
 } else {
-    echo "Error: " . $stmt->error;
+    echo json_encode(["status" => "error", "message" => "Requête invalide"]);
 }
-
-// Close the connection
-$stmt->close();
-$conn->close();
 ?>
