@@ -1,3 +1,4 @@
+
 // === 1. EDIT MODE ===
 $(document).on("click", ".edit-btn", function (e) {
     e.preventDefault();
@@ -26,7 +27,7 @@ $(document).on("click", ".edit-btn", function (e) {
     // Afficher le bouton de sauvegarde, masquer le bouton de soumission
     $(".btnSave").removeAttr("hidden");
     $(".btnSoumettre").attr("hidden", true);
-    $("#btnEnregistrer").attr("hidden", true);
+  
 
    
 });

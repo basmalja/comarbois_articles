@@ -12,14 +12,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $epaiss = $_POST['epaiss'] ?? '';
 
     // Define and execute the query to populate the $result variable
-    $sql = "SELECT * FROM details "; // Example query, replace with your actual query
+    $sql = "SELECT * FROM details ORDER BY `idBesoin` DESC"; // Example query, replace with your actual query
     $result = mysqli_query($conn, $sql);
     if (!$result) {
         echo "Error: " . mysqli_error($conn);
     }
 }
-if(isset($_GET['disabled']))$disabled='disabled';
-else $disabled='';
+if (isset($_GET['disabled']))
+    $disabled = 'disabled';
+else
+    $disabled = '';
 ?>
 
 <!DOCTYPE html>
@@ -32,15 +34,20 @@ else $disabled='';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../styles/styles.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-   
+
     <script src="../js/details.js"></script>
     <script src="../js/deletenew.js"></script>
     <script src="../js/edit_details.js"></script>
     <script src="../js/besoin.js"></script>
 </head>
 <small>
+
     <body>
         <div class="container mt-4 border border-danger">
+        <div class="btn-container d-flex justify-content-end">
+            <input onclick="window.location='besoin_list.php';" type="button" class="btn btn-danger" id="Fermer"
+                value="Fermer">
+        </div>
             <div class="form-container ">
                 <h4 class="mb-2 text-danger text-start">Besoin</h4>
                 <div id="besoinForm" class="row g-1" method="POST">
@@ -51,19 +58,22 @@ else $disabled='';
                     </div>
                     <div class="col-md-3">
                         <label for="date" class="form-label entete">Date</label>
-                        <input <?=$disabled?> type="date" class="form-control" id="date" name="date" style="width:95%" value="<?= (isset($_GET['date']) && strtotime($_GET['date'])) ? date('Y-m-d', strtotime($_GET['date'])) : '' ?>">
+                        <input <?= $disabled ?> type="date" class="form-control" id="date" name="date" style="width:95%"
+                            value="<?= (isset($_GET['date']) && strtotime($_GET['date'])) ? date('Y-m-d', strtotime($_GET['date'])) : '' ?>">
                     </div>
                     <div class="col-md-3">
                         <label for="origine" class="form-label entete">Origine</label>
-                        <select <?=$disabled?>  class="form-select" id="origine" name="origine" style="width:95%" value="<?= (isset($_GET['origine'])) ? $_GET['origine'] : '' ?>">
-                            <option value="" >&nbsp;</option>
+                        <select <?= $disabled ?> class="form-select" id="origine" name="origine" style="width:95%"
+                            value="<?= (isset($_GET['origine'])) ? $_GET['origine'] : '' ?>">
+                            <option value="">&nbsp;</option>
                             <option value="stock" <?= (isset($_GET['origine']) && $_GET['origine'] == "stock") ? "selected" : "" ?>>Stock</option>
                             <option value="vente" <?= (isset($_GET['origine']) && $_GET['origine'] == "vente") ? "selected" : "" ?>>Vente</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label for="client" class="form-label entete">Client</label>
-                        <select  <?=$disabled?>  class="form-select" id="client" name="client" style="width:95%" value="<?= (isset($_GET['client '])) ? $_GET['client'] : '' ?>">
+                        <select <?= $disabled ?> class="form-select" id="client" name="client" style="width:95%"
+                            value="<?= (isset($_GET['client '])) ? $_GET['client'] : '' ?>">
                             <option value="">&nbsp;</option>
                             <?php
                             $sql_nbre = "SELECT distinct client   FROM vue_client";
@@ -73,13 +83,14 @@ else $disabled='';
                             }
                             while ($res = mysqli_fetch_object($res_prdt)) {
                                 ?>
-                                <option value="<?= $res->client ?>" <?= (isset($_GET['client']) && $_GET['client'] == $res->client ) ? "selected" : "" ?>><?= $res->client ?></option>
+                                <option value="<?= $res->client ?>" <?= (isset($_GET['client']) && $_GET['client'] == $res->client) ? "selected" : "" ?>><?= $res->client ?></option>
                             <?php } ?>
                         </select>
                     </div>
                     <div class="col-md-12">
                         <label for="objet" class="form-label entete">Objet</label>
-                        <input type="text" class="form-control" id="objet" name="objet" style="width:95%" value="<?= (isset($_GET['objet'])) ? $_GET['objet'] : '' ?>">
+                        <input type="text" class="form-control" id="objet" name="objet" style="width:95%"
+                            value="<?= (isset($_GET['objet'])) ? $_GET['objet'] : '' ?>">
                     </div>
 
                     <div class="btn-container d-flex justify-content-end">
@@ -101,7 +112,7 @@ else $disabled='';
                             });
 
                         });
-                        
+
                     </script>
                 </div>
             </div>
@@ -231,13 +242,13 @@ else $disabled='';
                     </div>
                     <div class="col-md-1">
                         <label for="unite" class="form-label">Unité</label>
-                        <select class="form-select" id="unite" name="unite" style="width:95%"  >
+                        <select class="form-select" id="unite" name="unite" style="width:95%">
                             <option value="">&nbsp;</option>
                             <option value="ML">ML</option>
                             <option value="m2">M2</option>
                             <option value="m3">M3</option>
                             <option value="piece">Piece</option>
-                            
+
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -247,45 +258,46 @@ else $disabled='';
                     <div class="btn-container d-flex justify-content-end">
                         <input name="btnSoumettre" type="button" class="btn btn-danger btnSoumettre" id="btnSoumettre"
                             value="soumettre"></input>
-                        <input name="btnSave" type="button" class="btn btn-danger btnSave" id="btnSave"
-                            value="Save" hidden></input>
+                        <input name="btnSave" type="button" class="btn btn-danger btnSave" id="btnSave" value="Save"
+                            hidden></input>
                     </div>
-                   
+
                 </div>
             </div>
 
 
 
         </div>
-        <div class="row mt-4">                        
-        <div class="col-md-1"></div>
-        <div class="col-md-10  border border-danger ">
-        <h4 class="mb-2 text-danger text-start">Details</h4>
-            <table style="width:100%;"  class="table table-bordered">
-                <thead>
-                    <tr>
+        <div class="row mt-4">
+            <div class="col-md-1"></div>
+            <div class="col-md-10  border border-danger ">
+                <h4 class="mb-2 text-danger text-start">Details</h4>
+                <table style="width:100%;" class="table table-bordered">
+                    <thead>
+                        <tr>
 
-                        <th style="width:10%;">Fournisseur</th>
-                        <th style="width:10%;">Catégorie</th>
-                        <th style="width:10%;">sous_categorie</th>
-                        <th style="width:10%;">Qualité</th>
-                        <th style="width:5%;">Longueur</th>
-                        <th style="width:5%;">Largeur</th>
-                        <th style="width:5%;">Épaisseur</th>
-                        <th style="width:5%;">unite</th>
-                        <th style="width:5%;">quantite</th>
-                        <th style="width:35%;">designation</th>
-                        <th colspan="2" style="width:5%;"></th>
+                            <th style="width:10%;">Fournisseur</th>
+                            <th style="width:10%;">Catégorie</th>
+                            <th style="width:10%;">sous_categorie</th>
+                            <th style="width:10%;">Qualité</th>
+                            <th style="width:5%;">Longueur</th>
+                            <th style="width:5%;">Largeur</th>
+                            <th style="width:5%;">Épaisseur</th>
+                            <th style="width:5%;">unite</th>
+                            <th style="width:5%;">quantite</th>
+                            <th style="width:35%;">designation</th>
+                            <th colspan="2" style="width:5%;"></th>
 
-                    </tr>
-                </thead>
-                <tbody id="lesdonnees">
+                        </tr>
+                        
+                    </thead>
+                    <tbody id="lesdonnees">
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-     
-    </div>                       
     </body>
 </small>
 

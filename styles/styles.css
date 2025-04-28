@@ -11,11 +11,15 @@ small {
 
 .form-select,
 .form-control {
-  height: 25px;
-  font-size: smaller;
+  height: 25px; 
+
 
 }
+.form-select {
 
+  padding: 0 !important;
+  font-size: 12px !important;
+}
 .table {
   width: fit-content;
 }
@@ -42,7 +46,8 @@ small {
 }
 
 option {
-  font-size: smaller;
+  font-size: 10px;
+  
 
 }
 
@@ -52,4 +57,7 @@ optgroup,
 select,
 textarea {
   font-family: normal;
+}
+.mt-1{
+  margin-top: 1px;
 }

@@ -1,6 +1,10 @@
 
 $(document).ready(function () {
     chercher();
+    if ($("#idbesoin").val() !== "") {
+       
+        $("#btnEnregistrer").attr("hidden", true);
+    }
     $(".concat").change(function () {
         fournisseur = $("#fournisseur").val()
         categorie = $("#categorie").val(),

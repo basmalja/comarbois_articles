@@ -3,7 +3,8 @@ $(document).ready(function () {
 
     $("#btnEnregistrer").click(function (e) {
         e.preventDefault();
-
+        // hide the button after click
+        $("#btnEnregistrer").attr("hidden", true);
         const formData = {
             idbesoin: $("#idbesoin").val(),
             date: $("#date").val(),
@@ -11,6 +12,16 @@ $(document).ready(function () {
             client: $("#client").val(),
             objet: $("#objet").val()
         };
+          // Check if all three fields are empty
+          if (!formData.date || !formData.origine) {
+            alert("❌ Please fill in all fields.");
+            return; // Stop execution if validation fails
+
+        }
+        if (formData.origine === "vente" && !formData.client) {
+            alert("❌ Veuillez définir le client");
+            return; // Prevent further execution if "client" is empty
+        }
 
         $.ajax({
             type: "POST",
@@ -21,14 +32,8 @@ $(document).ready(function () {
                 if (response.status === "success") {
                     alert("✅ " + response.message);
 
-                    // Si besoin de faire quelque chose avec l'ID inséré :
-                    // $("#idbesoin").val(response.idbesoin);
-
-                    // Réinitialiser les champs
-                    $("#date").val('');
-                    $("#origine").val('');
-                    $("#client").val('');
-                    $("#objet").val('');
+                 
+                     $("#idbesoin").val(response.idbesoin);
 
                     chercher();
                 } else {
@@ -43,18 +48,44 @@ $(document).ready(function () {
 });
 
 function chercher() {
-    let id = $("#idbesoin").val();
+    const formData = {};
+
+    // Automatically get all input[type="text"], input[type="date"], select inside the form
+    $("#filterForm")
+        .find('input[type="text"], input[type="date"], select')
+        .each(function () {
+            const name = $(this).attr('name') || $(this).attr('id');
+            const value = $(this).val();
+            if (name) {
+                formData[name] = value;
+            }
+        });
 
     $("#lesdonnees").empty().append(
-        '<tr><td colspan="9" align="center"><img src="../images/ajax.loader.gif" align="absmiddle"> Chargement</td></tr>'
+        '<tr><td colspan="9" align="center"><img src="../images/ajax.loader.gif" align="absmiddle"> Chargement...</td></tr>'
     ).hide().fadeTo(700, 1);
 
-    $.post(
-        "../ajax/list_details.ajax.php",
-        { idBesoin: id },
-        function (data) {
-            $("#lesdonnees").empty().append(data.lignes).hide().fadeIn('slow');
+    $.ajax({
+        type: "POST",
+        url: "../ajax/besoin_list.ajax.php",
+        data: formData,
+        dataType: "json",
+        success: function (data) {
+            if (data.erreur && data.erreur !== '') {
+                $("#message").attr('class', 'err')
+                    .empty()
+                    .append('<img src="images/err.png" align="absmiddle"> ' + data.erreur)
+                    .hide()
+                    .fadeTo(700, 1);
+            } else {
+                $("#lesdonnees").empty().append(data.lignes).hide().fadeIn('slow');
+                $("#nbreEnr").empty().text(data.nbreEnre + ' enregistrement(s)').hide().fadeIn('slow');
+                $("#pages").empty();
+            }
         },
-        "json"
-    );
+        error: function (xhr) {
+            console.error("Erreur AJAX:", xhr.responseText);
+        }
+    });
 }
+

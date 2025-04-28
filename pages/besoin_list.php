@@ -25,7 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/besoin.js"></script>
 
-   
+
+
 </head>
 <small>
 
@@ -44,12 +45,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <table class="table table-bordered besoin">
                     <thead>
                         <tr>
-                            <th>IdBesoin</th>
-                            <th>Date</th>
-                            <th>Origine</th>
-                            <th>Client</th>
-                            <th>objet</th>
-                            <th></th>
+                            <th>IdBesoin<br> <input type="number"
+                                    value="<?= (isset($_GET['idModif'])) ? $_GET['idModif'] : '' ?>"
+                                    class="form-control" id="idbesoin" name="idbesoin" style="width:95%">
+                            </th>
+                            <th> Date
+                            <div class="d-flex gap-2 mt-1">
+                                <input type="date" class="form-control date" style="width: 130px;" id="date_debut"
+                                    name="date_debut" value="...">
+                                <input type="date" class="form-control date" style="width: 130px;" id="date_fin"
+                                    name="date_fin" value="...">
+                            </div>
+                            </th>
+                            <th>Origine<br> <select class="form-select" id="origine" name="origine" style="width:95%"
+                                    value="<?= (isset($_GET['origine'])) ? $_GET['origine'] : '' ?>">
+                                    <option value="">&nbsp;</option>
+                                    <option value="stock" <?= (isset($_GET['origine']) && $_GET['origine'] == "stock") ? "selected" : "" ?>>Stock</option>
+                                    <option value="vente" <?= (isset($_GET['origine']) && $_GET['origine'] == "vente") ? "selected" : "" ?>>Vente</option>
+                                </select></th>
+                            <th>Client<br> <select class="form-select" id="client" name="client" style="width:95%"
+                                    value="<?= (isset($_GET['client '])) ? $_GET['client'] : '' ?>">
+                                    <option value="">&nbsp;</option>
+                                    <?php
+                                    $sql_nbre = "SELECT distinct client   FROM vue_client";
+                                    $res_prdt = mysqli_query($conn, $sql_nbre);
+                                    if (!$res_prdt) {
+                                        echo "Error: " . mysqli_error($conn);
+                                    }
+                                    while ($res = mysqli_fetch_object($res_prdt)) {
+                                        ?>
+                                        <option value="<?= $res->client ?>" <?= (isset($_GET['client']) && $_GET['client'] == $res->client) ? "selected" : "" ?>><?= $res->client ?></option>
+                                    <?php } ?>
+                                </select></th>
+                            <th>Objet<br><input type="text" class="form-control" id="objet" name="objet"
+                                    style="width:95%" value="<?= (isset($_GET['objet'])) ? $_GET['objet'] : '' ?>">
+                            </th>
+                            <th colspan="2"></th>
 
                         </tr>
                     </thead>
@@ -68,7 +99,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <a href='../pages/details_list.php?idModif={$row['idBesoin']}&origine={$row['origine']}&date={$row['date']}&client={$row['client']}&disabled=1' class='consulter-btn' }>
                                         <img src='../images/crayon.png' height='20px' width='20px' alt='Edit'>
                                     </a>
-                                </td>
+                                    
+                                
                               </tr>";
                         }
                         ?>
