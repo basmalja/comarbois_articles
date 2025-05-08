@@ -13,22 +13,22 @@ $(document).on("click", ".edit-btn", function (e) {
 
     // Remplir le formulaire
     $("#id_detail").val(id);
-    $("#fournisseur").val(row.find("td:eq(0)").text());
-    $("#categorie").val(row.find("td:eq(1)").text());
-    $("#sous_categorie").val(row.find("td:eq(2)").text());
-    $("#qualite").val(row.find("td:eq(3)").text());
-    $("#longueur").val(row.find("td:eq(4)").text());
-    $("#largeur").val(row.find("td:eq(5)").text());
-    $("#epaisseur").val(row.find("td:eq(6)").text());
-    $("#unite").val(row.find("td:eq(7)").text());
-    $("#quantite").val(row.find("td:eq(8)").text());
-    $("#designation").val(row.find("td:eq(9)").text());
+    $("#fournisseur").val(row.find("td:eq(1)").text());
+    $("#categorie").val(row.find("td:eq(2)").text());
+    $("#sous_categorie").val(row.find("td:eq(3)").text());
+    $("#qualite").val(row.find("td:eq(4)").text());
+    $("#longueur").val(row.find("td:eq(5)").text());
+    $("#largeur").val(row.find("td:eq(6)").text());
+    $("#epaisseur").val(row.find("td:eq(7)").text());
+    $("#unite").val(row.find("td:eq(8)").text());
+    $("#quantite").val(row.find("td:eq(9)").text());
+    $("#designation").val(row.find("td:eq(10)").text());
 
     // Afficher le bouton de sauvegarde, masquer le bouton de soumission
     $(".btnSave").removeAttr("hidden");
     $(".btnSoumettre").attr("hidden", true);
   
-
+    chercher(); // recharge les données
    
 });
 
@@ -78,9 +78,21 @@ $(document).on("click", ".btnSave", function (e) {
             console.error("Erreur AJAX:", xhr.responseText);
         }
     });
+    
+    chercher(); // recharge les données
 });
 
+function chercher() {
+    id = $("#idbesoin").val();
 
+    $("#lesdonnees").empty().append('<tr><td colspan="9" align="center"><img src="../images/ajax.loader.gif" align="absmiddle" > Chargement</td></tr>').hide().fadeTo(700, 1);
+    $.post("../ajax/list_details.ajax.php",
+        { idBesoin: id },
+        function (data) {
+            //alert(data.lignes);
+            $("#lesdonnees").empty().append(data.lignes).hide().fadeIn('slow');
+        }, "json");
+}
 // === 3. RESET FONCTION ===
 function resetForm() {
     $("#id_detail").val('');

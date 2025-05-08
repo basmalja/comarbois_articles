@@ -13,6 +13,7 @@ $(document).ready(function () {
         $("#add_demande").attr("hidden", true);
         const formData = {
             idDemande: $('#idDemande').val(),
+            idBesoin :$('#idBesoin').val(),
             date: $('#date').val().trim(),
             origine: $('#origine').val().trim(),
             client: $('#client').val().trim(),
@@ -53,6 +54,7 @@ $(document).ready(function () {
         e.preventDefault(); // Empêche le rechargement de la page
         var formData = {
             idDemande: $("#idDemande").val(),
+          
             produit: $("#produit").val(),
             unite: $("#unite").val(),
             quantite: $("#quantite").val()

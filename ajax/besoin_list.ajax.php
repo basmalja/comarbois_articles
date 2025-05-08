@@ -1,66 +1,39 @@
 <?php
-
-
-// Include database connection
 include '../connexion/db.php';
+extract($_POST);
+$lignes = '';
 
-$response = [
-    'erreur' => '',
-    'nbreEnre' => 0,
-    'lignes' => ''
-];
+$chaine = '';
+if ($idBesoin) $chaine .= "AND idBesoin='$idBesoin'";
+if ($origine) $chaine .= "AND origine='$origine'";
+if ($client) $chaine .= "AND client='$client'";
+if ($date_debut) $chaine .= "AND date >= '$date_debut'";
+if ($date_fin) $chaine .= "AND date <= '$date_fin'";
+if ($status) $chaine .= "AND status='$status'";
+if ($objet) $chaine .= "AND objet LIKE '%$objet%'";
 
-try {
-    $where = [];
-    $params = [];
+$sql_select = "SELECT * FROM besoin WHERE 1 $chaine";
+$result = mysqli_query($conn, $sql_select);
 
-    if (!empty($_POST['idbesoin'])) {
-        $where[] = "idbesoin = :idbesoin";
-        $params[':idbesoin'] = $_POST['idbesoin'];
-    }
-    if (!empty($_POST['date'])) {
-        $where[] = "date = :date";
-        $params[':date'] = $_POST['date'];
-    }
-    if (!empty($_POST['origine'])) {
-        $where[] = "origine = :origine";
-        $params[':origine'] = $_POST['origine'];
-    }
-    if (!empty($_POST['client'])) {
-        $where[] = "client LIKE :client";
-        $params[':client'] = '%' . $_POST['client'] . '%';
-    }
-    if (!empty($_POST['objet'])) {
-        $where[] = "objet LIKE :objet";
-        $params[':objet'] = '%' . $_POST['objet'] . '%';
-    }
-
-    $sql = "SELECT * FROM besoins";
-    if (!empty($where)) {
-        $sql .= " WHERE " . implode(' AND ', $where);
-    }
-    $sql .= " ORDER BY date DESC";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    if (!$rows) {
-        $response['erreur'] = "Aucun besoin trouvé.";
-    } else {
-        foreach ($rows as $row) {
-            $response['lignes'] .= "<tr>";
-            $response['lignes'] .= "<td>" . htmlspecialchars($row['idbesoin']) . "</td>";
-            $response['lignes'] .= "<td>" . htmlspecialchars($row['date']) . "</td>";
-            $response['lignes'] .= "<td>" . htmlspecialchars($row['origine']) . "</td>";
-            $response['lignes'] .= "<td>" . htmlspecialchars($row['client']) . "</td>";
-            $response['lignes'] .= "<td>" . htmlspecialchars($row['objet']) . "</td>";
-            $response['lignes'] .= "</tr>";
-        }
-        $response['nbreEnre'] = count($rows);
-    }
-} catch (PDOException $e) {
-    $response['erreur'] = "Erreur BDD : " . $e->getMessage();
+while ($row = mysqli_fetch_assoc($result)) {
+    $lignes .= "<tr>
+        <td>{$row['idBesoin']}</td>
+        <td>{$row['date']}</td>
+        <td>{$row['origine']}</td>
+        <td>{$row['client']}</td>
+        <td>{$row['objet']}</td>
+        <td>{$row['status']}</td>
+        <td>
+            <a href='../pages/details_list.php?idModif={$row['idBesoin']}&disabled=1' class='consulter-btn'>
+                <img src='../images/crayon.png' height='20px' width='20px' alt='Edit'>
+            </a>
+        </td>
+    </tr>";
 }
 
-echo json_encode($response);
+// If no results, show message row
+if (empty($lignes)) {
+    $lignes = "<tr><td colspan='7' style='text-align:center; color: red; font-weight: bold;'>Aucun résultat trouvé.</td></tr>";
+}
+
+echo json_encode(["lignes" => $lignes]);

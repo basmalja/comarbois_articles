@@ -1,21 +1,33 @@
 <?php
 include '../connexion/db.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+if (isset($_GET['idDemande'])) {
+    $idDemande = $_GET['idDemande'];
 
-    // Define and execute the query to populate the $result variable
-    $sql = "SELECT * FROM demande_produit "; // Example query, replace with your actual query
+    // Requête SQL CORRIGÉE (à exécuter avec PDO ou MySQLi)
+    $sql = "SELECT * FROM demande_achat WHERE idDemande = '$idDemande' ";
     $result = mysqli_query($conn, $sql);
     if (!$result) {
         echo "Error: " . mysqli_error($conn);
+    } else {
+        $row = mysqli_fetch_assoc($result);
+        $origine = $row['origine'];
+        $client = $row['client'];
+        $date = $row['date'];
+        $idBesoin = $row['idBesoin'];
+        $objet = $row['objet'];
     }
+    // Exécution de la requête (exemple avec MySQLi)
+    // $result = mysqli_query($conn, $sql);
+
+} else {
+    $idDemande = null;
 }
-if (isset($_GET['disabled']))
-    $disabled = 'disabled';
-else
-    $disabled = '';
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,7 +69,7 @@ else
                 <div class="col-md-2">
                     <label for="date" class="form-label">Date</label>
                     <input type="date" class="form-control" id="date" name="date" required
-                        value="<?= $_GET['date'] ?? '' ?>">
+                        value="<?= $date ?>">
                 </div>
 
                 <div class="col-md-3">
@@ -65,14 +77,14 @@ else
                     <select class="form-select" id="origine" name="origine" style="width:95%" <?= $disabled ?>
                         value="<?= $_GET['origine'] ?? '' ?>">
                         <option value="">&nbsp;</option>
-                        <option value="stock" <?= (isset($_GET['origine']) && $_GET['origine'] == "stock") ? "selected" : "" ?>>Stock</option>
-                        <option value="vente" <?= (isset($_GET['origine']) && $_GET['origine'] == "vente") ? "selected" : "" ?>>Vente</option>
+                        <option value="stock" <?= (isset($origine) && $origine == "stock") ? "selected" : "" ?>>Stock</option>
+                        <option value="vente" <?= (isset($origine) && $origine == "vente") ? "selected" : "" ?>>Vente</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label for="client" class="form-label ">Client</label>
                     <select class="form-select" id="client" name="client" style="width:95%" <?= $disabled ?>
-                        value="<?= $_GET['client'] ?? '' ?>">
+                        value="<?= $client ?>">
                         <option value="">&nbsp;</option>
                         <?php
                         $sql_nbre = "SELECT distinct client   FROM vue_client";
@@ -82,30 +94,23 @@ else
                         }
                         while ($res = mysqli_fetch_object($res_prdt)) {
                             ?>
-                            <option value="<?= $res->client ?>" <?= (isset($_GET['client']) && $_GET['client'] == $res->client) ? "selected" : "" ?>><?= $res->client ?></option>
+                            <option value="<?= $res->client ?>" <?= (isset($client) && $client == $res->client) ? "selected" : "" ?>><?= $res->client ?></option>
                         <?php } ?>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <label for="idBesoin" class="form-label ">idBesoin</label>
-                    <select class="form-select" id="idBesoin" name="idBesoin" style="width:95%" <?= $disabled ?>
-                        value="<?= $_GET['client'] ?? '' ?>">
-                        <option value="">&nbsp;</option>
-                        <?php
-                        $sql_nbre = "SELECT distinct idBesoin   FROM besoin";
-                        $res_prdt = mysqli_query($conn, $sql_nbre);
-                        if (!$res_prdt) {
-                            echo "Error: " . mysqli_error($conn);
-                        }
-                        while ($res = mysqli_fetch_object($res_prdt)) {
-                            ?>
-                            <option value="<?= $res->idBesoin ?>" <?= (isset($_GET['idBesoin']) && $_GET['idBesoin'] == $res->idBesoin) ? "selected" : "" ?>><?= $res->idBesoin ?></option>
-                        <?php } ?>
-                    </select>
+                    <label for="idBesoin" class="form-label ">IdBesoin</label>
+                    <input type="text" class="form-control" id="idBesoin" name="idBesoin" required disabled
+                        value="<?= $idBesoin ?? '' ?>">
                 </div>
+                <div class="col-md-6">
+                        <label for="objet" class="form-label entete">Objet</label>
+                        <input type="text" class="form-control" id="objet" name="objet" style="width:95%"
+                            value="<?= (isset($objet)) ? $objet: '' ?>">
+                    </div>
                 <div class="btn-container d-flex justify-content-end gap-2">
                     <input name="add_demande" type="button" class="btn btn-danger add_demande" id="add_demande"
-                        value="ajout_demande"></input>
+                        value="Ajout_Demande"></input>
 
                     <button type="button" onclick="generateTBGLink()" class="btn btn-danger">
                         Bon Commande TBG
@@ -116,12 +121,13 @@ else
                     function generateTBGLink() {
                         // Get values from form fields
                         const idDemande = document.getElementById('idDemande').value;
+                        const idBesoin = document.getElementById('idBesoin').value;
                         const date = document.getElementById('date').value;
                         const origine = document.getElementById('origine').value;
                         const client = document.getElementById('client').value;
 
                         // Construct URL
-                        const url = `../pages/commande_TBG.php?idDemande=${idDemande}&origine=${origine}&date=${date}&client=${client}&disabled=1`;
+                        const url = `../pages/commande_TBG.php?idDemande=${idDemande}&idBesoin=${idBesoin}&origine=${origine}&date=${date}&client=${client}&disabled=1`;
 
                         // Redirect to the URL
                         window.location.href = url;
@@ -133,11 +139,11 @@ else
         </div>
 
         <div class="container mt-4 border border-danger">
-            <div class="form-container demande-produit-form">
+            <div class="form-container demande-produit-form row g-1"">
                 <h4 class="mb-2 text-danger text-start">Ajout produit</h4>
                 <input type="hidden" id="idDemande" name="idDemande" value="">
                 <input type="hidden" id="id_demande_produit" name="id_demande_produit" value="">
-                <div class="mb-3">
+                <div class="col-md-6">
                     <label for="produit" class="form-label">Produit</label>
                     <select name="produit" id="produit" class="form-select">
                         <option value="">&nbsp;</option>
@@ -149,34 +155,33 @@ else
                         }
                         while ($res = mysqli_fetch_object($res_prdt)) {
                             ?>
-                            <option value="<?= $res->designation ?>" <?= isset($_GET['designation']) && $_GET['designation'] == $res->designation ?>><?= $res->designation ?>
+                            <option value="<?= $res->designation ?>"><?= $res->designation ?>
                             </option>
+                           
                         <?php } ?>
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="col-md-3">
                     <label for="unite" class="form-label">uniteé</label>
                     <select name="unite" id="unite" class="form-select">
                         <option value="">&nbsp;</option>
-                        <option value="m">mètre (m)</option>
+                        <option value="m">mètre  (m)</option>
                         <option value="m²">mètre carré (m²)</option>
                         <option value="m³">mètre cube (m³)</option>
                         <option value="pièce">pièce</option>
                     </select>
                 </div>
 
-                <div class="mb-3"> 
+                <div class="col-md-3">
                     <label for="quantite" class="form-label">Quantité</label>
                     <input type="number" name="quantite" id="quantite" class="form-control"
                         placeholder="Entrez la quantité" min="0" step="any" required>
                 </div>
                 <div class="btn-container d-flex justify-content-end">
                     <input name="add_produit" type="button" class="btn btn-danger add_produit" id="add_produit"
-                        value="ajout_produit"></input>
-                    <input name="btnSave" type="button" class="btn btn-danger btnSave" id="btnSave" value="Save"
-                        hidden></input>
-
+                        value="Ajout_Produit"></input>
+                    
 
                 </div>
                 <script>
@@ -207,11 +212,11 @@ else
                     <thead>
                         <tr>
 
-
-                            <th style="width:2%;">produit</th>
-                            <th style="width:2%;">unite</th>
-                            <th style="width:2%;">quantite</th>
-                            <th colspan="2" style="width:0.5%;"></th>
+                            <th style="width:40% ;">Désignation</th>
+                            <th style="width:40%;">Produit</th>
+                            <th style="width:10%;">Unité</th>
+                            <th style="width:10%;">Quantite</th>
+                            <th colspan="2" style="width:5%;"></th>
 
                         </tr>
                     </thead>

@@ -4,6 +4,7 @@ include '../connexion/db.php'; // Assurez-vous d'inclure votre connexion à la b
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Récupérer les valeurs du formulaire
     $idDemande = $_POST['idDemande'] ?? '';
+  
     $produit = $_POST['produit'] ??'';
     $unite = $_POST['unite'] ?? '';
     $quantite = $_POST['quantite'] ?? '';

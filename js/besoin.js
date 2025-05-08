@@ -3,17 +3,16 @@ $(document).ready(function () {
 
     $("#btnEnregistrer").click(function (e) {
         e.preventDefault();
-        // hide the button after click
-        $("#btnEnregistrer").attr("hidden", true);
         const formData = {
             idbesoin: $("#idbesoin").val(),
             date: $("#date").val(),
             origine: $("#origine").val(),
             client: $("#client").val(),
-            objet: $("#objet").val()
+            objet: $("#objet").val(),
+            status: $("#status").val()
         };
-          // Check if all three fields are empty
-          if (!formData.date || !formData.origine) {
+        // Check if all three fields are empty
+        if (!formData.date || !formData.origine) {
             alert("❌ Please fill in all fields.");
             return; // Stop execution if validation fails
 
@@ -32,8 +31,9 @@ $(document).ready(function () {
                 if (response.status === "success") {
                     alert("✅ " + response.message);
 
-                 
-                     $("#idbesoin").val(response.idbesoin);
+                    $("#btnEnregistrer").attr("hidden", true);
+
+                    $("#idbesoin").val(response.idbesoin);
 
                     chercher();
                 } else {
@@ -45,47 +45,40 @@ $(document).ready(function () {
             }
         });
     });
-});
 
-function chercher() {
-    const formData = {};
+    
 
-    // Automatically get all input[type="text"], input[type="date"], select inside the form
-    $("#filterForm")
-        .find('input[type="text"], input[type="date"], select')
-        .each(function () {
-            const name = $(this).attr('name') || $(this).attr('id');
-            const value = $(this).val();
-            if (name) {
-                formData[name] = value;
-            }
-        });
+    $("#btn-chercher").click(function (e) {
+        chercher()
+    })
 
-    $("#lesdonnees").empty().append(
-        '<tr><td colspan="9" align="center"><img src="../images/ajax.loader.gif" align="absmiddle"> Chargement...</td></tr>'
-    ).hide().fadeTo(700, 1);
+    function chercher() {
+        let id = $("#idbesoin").val();
+        let origine = $("#origine").val();
+        let client = $("#client").val();
+        let objet = $("#objet").val();
+        let date_debut = $("#date_debut").val();
+        let date_fin = $("#date_fin").val();
+        let status = $("#status").val();
+        $("#lesdonnees").empty().append(
+            '<tr><td colspan="9" align="center"><img src="../images/ajax.loader.gif" align="absmiddle"> Chargement</td></tr>'
+        ).hide().fadeTo(700, 1);
 
-    $.ajax({
-        type: "POST",
-        url: "../ajax/besoin_list.ajax.php",
-        data: formData,
-        dataType: "json",
-        success: function (data) {
-            if (data.erreur && data.erreur !== '') {
-                $("#message").attr('class', 'err')
-                    .empty()
-                    .append('<img src="images/err.png" align="absmiddle"> ' + data.erreur)
-                    .hide()
-                    .fadeTo(700, 1);
-            } else {
+        $.post(
+            "../ajax/besoin_list.ajax.php",
+            { idBesoin: id,
+                origine: origine,
+                client: client,
+                objet: objet,
+                date_debut: date_debut,
+                date_fin: date_fin , status: status },
+            function (data) {
                 $("#lesdonnees").empty().append(data.lignes).hide().fadeIn('slow');
-                $("#nbreEnr").empty().text(data.nbreEnre + ' enregistrement(s)').hide().fadeIn('slow');
-                $("#pages").empty();
-            }
-        },
-        error: function (xhr) {
-            console.error("Erreur AJAX:", xhr.responseText);
-        }
-    });
-}
+            },
+            "json"
+        );
+    }
+
+
+});
 

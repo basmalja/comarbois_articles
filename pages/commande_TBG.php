@@ -80,11 +80,14 @@ else
                 </div>
 
 
-                <div class="btn-container d-flex justify-content-end">
+                <div class="btn-container d-flex justify-content-end gap-3">
 
-                    <a href='../pages/Bon_de_Commande.php'>
-                        <img src="../images/imprimer.png" height='30px' width='30px' alt='imprimer'>
-                    </a>
+                   <button id="btnEnregistrer" class="btn border-0 p-0 bg-transparent ">
+                        <img src="../images/save.png" height='30px' width='30px' alt='Enregistrer' >
+                  </button>
+                  <button id="btnImprimer" class="btn border-0 p-0 bg-transparent ">
+                        <img src="../images/imprimer.png" height='30px' width='30px' alt='imprimer' >
+                  </button>
 
                 </div>
 

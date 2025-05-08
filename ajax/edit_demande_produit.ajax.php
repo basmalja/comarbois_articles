@@ -4,7 +4,7 @@ include '../connexion/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get data from POST request
-    $id = isset($_POST['id_demande_produit']) ? intval($_POST['id_demande_produit']) : 0;
+    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     $produit = isset($_POST['produit']) ? $_POST['produit'] : '';
     $unite = isset($_POST['unite']) ? $_POST['unite'] : '';
     $quantite = isset($_POST['quantite']) ? $_POST['quantite'] : '';
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id > 0) {
         // Prepare the SQL statement to update the record
         $query = "UPDATE demande_produit SET 
-                    produit = '$produit', 
+                    produit = '$produit',
                     unite = '$unite',
                     quantite = '$quantite'
                   WHERE id_demande_produit = $id";

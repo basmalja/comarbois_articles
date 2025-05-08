@@ -10,9 +10,11 @@ $(document).on("click", ".edit-btn", function (e) {
         alert("❌ ID invalide ou manquant");
         return;
     }
-
+    var produit = row.find("td:eq(1) select option:selected").text();
+    var unite = row.find("td:eq(2) select option:selected").text();
+    var quantite =  row.find("td:eq(3) input[type='number']").val();
     // Remplir le formulaire
-   
+   /*
     $("#id_demande_produit").val(id);
     $("#produit").val(row.find("td:eq(0)").text());
     $("#unite").val(row.find("td:eq(1)").text());
@@ -21,56 +23,21 @@ $(document).on("click", ".edit-btn", function (e) {
 
     // Afficher le bouton de sauvegarde, masquer le bouton de soumission
     $(".btnSave").removeAttr("hidden");
-    $(".add_produit").attr("hidden", true);
+    $(".add_produit").attr("hidden", true);*/
    
 
-   
-});
-
-
-// === 2. SAVE MODE ===
-$(document).on("click", ".btnSave", function (e) {
-    e.preventDefault();
-
-    const id = $("#id_demande_produit").val();
-
-    if (!id) {
-        alert("❌ ID manquant pour la mise à jour");
-        return;
-    }
-
-    const formData = {
-        id_demande_produit: id,
-        produit: $("#produit").val(),
-        unite: $("#unite").val(),
-        quantite: $("#quantite").val(),
-    };
-
-    $.ajax({
-        type: "POST",
-        url: "../ajax/edit_demande_produit.ajax.php",
-        data: formData,
-        dataType: "json",
-        success: function (response) {
-            if (response.success === true) {
-                alert("✅ " + response.message);
-                chercher(); // recharge les données
-                resetForm(); // Réinitialiser les champs
-                $(".btnSave").attr("hidden", true);
-                $(".add_produit").removeAttr("hidden");
-            } else {
-                alert(response.message);
-            }
-        },
-        error: function (xhr) {
-            console.error("Erreur AJAX:", xhr.responseText);
+    $.post(
+        "../ajax/edit_demande_produit.ajax.php",
+        {id: id, produit: produit,unite:unite, quantite: quantite},
+        function (response) {
+            // ✅ Show success message
+            console.log(JSON.parse(response));
+            alert(JSON.parse(response).message);
+            chercher(); // Refresh the table
+           
         }
-    });
+    );
+    
 });
 
 
-// === 3. RESET FONCTION ===
-function resetForm() {
-    $("#id_demande_produit").val('');
-    $("#produit, #unite, #quantite").val('');
-}

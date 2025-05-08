@@ -9,9 +9,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $origine = $_POST['origine'] ?? '';
     $client = $_POST['client'] ?? '';
     $objet = $_POST['objet'] ?? ''; 
+    $status = $_POST['status'] ?? ''; 
+
 
     // Préparer la requête SQL pour éviter les injections SQL
-    $sql = "INSERT INTO besoin (idbesoin, date, origine, client , objet) VALUES ('$idbesoin', '$date', '$origine', '$client','$objet')";
+    $sql = "INSERT INTO besoin (idbesoin, date, origine, client , objet , status) VALUES ('$idbesoin', '$date', '$origine', '$client','$objet' , '$status')";
     if (mysqli_query($conn, $sql)) {
         $last_id = mysqli_insert_id($conn); // Récupérer l'ID inséré
         echo json_encode(["status" => "success", "idModif" => $last_id, "message" => "Insertion réussie", "idbesoin" => $last_id]);
